@@ -34,7 +34,7 @@ To use this server, you must have both Python and [Deno](https://deno.com/) inst
 The server can be run with `deno` installed using `uvx`:
 
 ```bash
-uvx mcp-run-python [-h] [--version] [--port PORT] [--deps DEPS] {stdio,streamable-http,streamable-http-stateless,example}
+uvx mcp-run-python [-h] [--version] [--port PORT] [--deps DEPS] [--index-url URL] {stdio,streamable-http,streamable-http-stateless,example}
 ```
 
 where:
@@ -166,3 +166,13 @@ edit the filesystem.
 * `deno` is then run with read-only permissions to the `node_modules` directory to run untrusted code.
 
 Dependencies must be provided when initializing the server so they can be installed in the first step.
+
+## Custom Package Indexes
+
+Use `--index-url` to install dependencies from private registries (can be repeated, tried in order before PyPI):
+
+```bash
+uvx mcp-run-python --index-url https://private.repo.com/simple --deps mypackage stdio
+```
+
+The Python API accepts `index_urls` in `code_sandbox`, `prepare_deno_env`, and `run_mcp_server`. See [micropip documentation](https://micropip.pyodide.org/en/stable/project/api.html#micropip.install) for index URL requirements.

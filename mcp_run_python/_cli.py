@@ -24,6 +24,13 @@ def cli_logic(args_list: Sequence[str] | None = None) -> int:
     parser.add_argument('--port', type=int, help='Port to run the server on, default 3001.')
     parser.add_argument('--deps', '--dependencies', help='Comma separated list of dependencies to install')
     parser.add_argument(
+        '--index-url',
+        action='append',
+        dest='index_urls',
+        metavar='URL',
+        help='Package index URL for installing dependencies (can be repeated, tried in order before PyPI)',
+    )
+    parser.add_argument(
         '--disable-networking', action='store_true', help='Disable networking during execution of python code'
     )
     parser.add_argument('--verbose', action='store_true', help='Enable verbose logging')
@@ -47,11 +54,13 @@ def cli_logic(args_list: Sequence[str] | None = None) -> int:
         )
 
         deps: list[str] = args.deps.split(',') if args.deps else []
+        index_urls: list[str] = args.index_urls or []
         return_code = run_mcp_server(
             args.mode.replace('-', '_'),
             allow_networking=not args.disable_networking,
             http_port=args.port,
             dependencies=deps,
+            index_urls=index_urls,
             deps_log_handler=deps_log_handler,
             verbose=bool(args.verbose),
         )
