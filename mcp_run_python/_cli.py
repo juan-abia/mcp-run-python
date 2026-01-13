@@ -22,7 +22,10 @@ def cli_logic(args_list: Sequence[str] | None = None) -> int:
     )
 
     parser.add_argument('--port', type=int, help='Port to run the server on, default 3001.')
-    parser.add_argument('--deps', '--dependencies', help='Comma separated list of dependencies to install')
+    parser.add_argument(
+        '--dep', action='append', dest='dep_list', metavar='PKG', help='Dependency to install (can be repeated)'
+    )
+    parser.add_argument('--deps', '--dependencies', help='(Deprecated) Comma separated list of dependencies to install')
     parser.add_argument(
         '--index-url',
         action='append',
@@ -53,7 +56,9 @@ def cli_logic(args_list: Sequence[str] | None = None) -> int:
             format='%(message)s',
         )
 
-        deps: list[str] = args.deps.split(',') if args.deps else []
+        deps: list[str] = args.dep_list or []
+        if args.deps:
+            deps.extend(args.deps.split(','))
         index_urls: list[str] = args.index_urls or []
         return_code = run_mcp_server(
             args.mode.replace('-', '_'),

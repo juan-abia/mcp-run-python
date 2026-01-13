@@ -124,9 +124,10 @@ export class RunCode {
 
     const preparePyEnv: PreparePyEnv = pyodide.pyimport(moduleName)
 
-    const prepareStatus = indexUrls.length > 0
-      ? await preparePyEnv.prepare_env(pyodide.toPy(dependencies), pyodide.toPy(indexUrls))
-      : await preparePyEnv.prepare_env(pyodide.toPy(dependencies))
+    const prepareStatus = await preparePyEnv.prepare_env(
+      pyodide.toPy(dependencies),
+      pyodide.toPy(indexUrls),
+    )
     return {
       pyodide,
       preparePyEnv,
@@ -218,6 +219,6 @@ interface PrepareError {
   message: string
 }
 interface PreparePyEnv {
-  prepare_env: (dependencies: any, index_urls?: any) => Promise<PrepareSuccess | PrepareError>
+  prepare_env: (dependencies: any, index_urls: any) => Promise<PrepareSuccess | PrepareError>
   dump_json: (value: any, always_return_json: boolean) => string | null
 }
