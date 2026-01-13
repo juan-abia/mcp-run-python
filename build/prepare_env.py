@@ -39,7 +39,7 @@ async def prepare_env(dependencies: list[str] | None, index_urls: list[str] | No
 
         with _micropip_logging() as logs_filename:
             try:
-                await micropip.install(dependencies, keep_going=True, index_urls=index_urls)
+                await micropip.install(dependencies, keep_going=True, index_urls=index_urls or None)
                 importlib.invalidate_caches()
             except Exception:
                 with open(logs_filename) as f:
