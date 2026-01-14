@@ -21,10 +21,27 @@ export async function main() {
   const { args } = Deno
   const flags = parseArgs(Deno.args, {
     string: ['deps', 'return-mode', 'port', 'index-urls'],
+    collect: ['dep', 'index-url'],
     default: { port: '3001', 'return-mode': 'xml' },
   })
-  const deps = flags.deps?.split(',') ?? []
-  const indexUrls = flags['index-urls']?.split(',') ?? []
+
+  // Deprecation warnings for old comma-separated args
+  if (flags.deps) {
+    console.warn('Warning: --deps is deprecated, use --dep instead (can be repeated)')
+  }
+  if (flags['index-urls']) {
+    console.warn('Warning: --index-urls is deprecated, use --index-url instead (can be repeated)')
+  }
+
+  // Support both new repeatable args and old comma-separated (backwards compat)
+  const deps: string[] = [
+    ...((flags.dep as string[] | undefined) ?? []),
+    ...(flags.deps?.split(',').filter(Boolean) ?? []),
+  ]
+  const indexUrls: string[] = [
+    ...((flags['index-url'] as string[] | undefined) ?? []),
+    ...(flags['index-urls']?.split(',').filter(Boolean) ?? []),
+  ]
   if (args.length >= 1) {
     if (args[0] === 'stdio') {
       await runStdio(deps, indexUrls, flags['return-mode'])
@@ -53,8 +70,8 @@ Usage: deno ... deno/main.ts [stdio|streamable_http|streamable_http_stateless|ex
 
 options:
 --port <port>               Port to run the HTTP server on (default: 3001)
---deps <deps>               Comma separated list of dependencies to install
---index-urls <urls>         Comma separated list of package index URLs (tried in order before PyPI)
+--dep <pkg>                 Dependency to install (can be repeated)
+--index-url <url>           Package index URL (can be repeated, tried before PyPI)
 --return-mode <xml/json>    Return mode for output data (default: xml)`,
   )
   Deno.exit(1)

@@ -181,9 +181,11 @@ def _deno_install_args(dependencies: list[str] | None = None, index_urls: list[s
         'noop',
     ]
     if dependencies is not None:
-        args.append(f'--deps={",".join(dependencies)}')
+        for dep in dependencies:
+            args.append(f'--dep={dep}')
     if index_urls:
-        args.append(f'--index-urls={",".join(index_urls)}')
+        for url in index_urls:
+            args.append(f'--index-url={url}')
     return args
 
 
@@ -207,9 +209,11 @@ def _deno_run_args(
         f'--return-mode={return_mode}',
     ]
     if dependencies is not None:
-        args.append(f'--deps={",".join(dependencies)}')
+        for dep in dependencies:
+            args.append(f'--dep={dep}')
     if index_urls:
-        args.append(f'--index-urls={",".join(index_urls)}')
+        for url in index_urls:
+            args.append(f'--index-url={url}')
     if http_port is not None:
         if mode in ('streamable_http', 'streamable_http_stateless'):
             args.append(f'--port={http_port}')

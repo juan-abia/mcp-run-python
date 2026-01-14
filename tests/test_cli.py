@@ -15,5 +15,10 @@ def test_cli_example_success():
     assert cli_logic(['--deps', 'numpy', 'example']) == 0
 
 
+def test_cli_dep_repeatable():
+    """Test new --dep repeatable flag"""
+    assert cli_logic(['--dep', 'numpy', 'example']) == 0
+
+
 def test_cli_example_fail():
     assert cli_logic(['example']) == 1
