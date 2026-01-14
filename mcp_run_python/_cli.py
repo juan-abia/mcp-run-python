@@ -3,6 +3,7 @@ from __future__ import annotations as _annotations
 import argparse
 import logging
 import sys
+import warnings
 from collections.abc import Sequence
 
 from . import __version__
@@ -25,7 +26,7 @@ def cli_logic(args_list: Sequence[str] | None = None) -> int:
     parser.add_argument(
         '--dep', action='append', dest='dep_list', metavar='PKG', help='Dependency to install (can be repeated)'
     )
-    parser.add_argument('--deps', '--dependencies', help='(Deprecated) Comma separated list of dependencies to install')
+    parser.add_argument('--deps', '--dependencies', help=argparse.SUPPRESS)
     parser.add_argument(
         '--index-url',
         action='append',
@@ -58,6 +59,11 @@ def cli_logic(args_list: Sequence[str] | None = None) -> int:
 
         deps: list[str] = args.dep_list or []
         if args.deps:
+            warnings.warn(
+                '--deps is deprecated, use --dep instead (can be repeated)',
+                DeprecationWarning,
+                stacklevel=2,
+            )
             deps.extend(args.deps.split(','))
         index_urls: list[str] = args.index_urls or []
         return_code = run_mcp_server(
