@@ -20,7 +20,7 @@ const VERSION = '0.0.13'
 export async function main() {
   const { args } = Deno
   const flags = parseArgs(Deno.args, {
-    string: ['deps', 'return-mode', 'port', 'index-urls'],
+    string: ['deps', 'return-mode', 'port'],
     collect: ['dep', 'index-url'],
     default: { port: '3001', 'return-mode': 'xml' },
   })
@@ -29,19 +29,12 @@ export async function main() {
   if (flags.deps) {
     console.warn('Warning: --deps is deprecated, use --dep instead (can be repeated)')
   }
-  if (flags['index-urls']) {
-    console.warn('Warning: --index-urls is deprecated, use --index-url instead (can be repeated)')
-  }
-
   // Support both new repeatable args and old comma-separated (backwards compat)
   const deps: string[] = [
     ...((flags.dep as string[] | undefined) ?? []),
     ...(flags.deps?.split(',').filter(Boolean) ?? []),
   ]
-  const indexUrls: string[] = [
-    ...((flags['index-url'] as string[] | undefined) ?? []),
-    ...(flags['index-urls']?.split(',').filter(Boolean) ?? []),
-  ]
+  const indexUrls: string[] = (flags['index-url'] as string[] | undefined) ?? []
   if (args.length >= 1) {
     if (args[0] === 'stdio') {
       await runStdio(deps, indexUrls, flags['return-mode'])
